@@ -1,22 +1,41 @@
-# 🧰 Simple TypeScript Starter | 2023
+# 🧰 Simple TypeScript Starter | 2024
 
-> We talk about a lot of **advanced Node.js and TypeScript** concepts on [the blog](https://khalilstemmler.com), particularly focused around Domain-Driven Design and large-scale enterprise application patterns. However, I received a few emails from readers that were interested in seeing what a basic TypeScript starter project looks like. So I've put together just that.
+> A blog is soon coming on [my website](https://codedcoffee.com.pk). This template is particularly focused around Domain-Driven Design and large-scale enterprise application patterns. Hope you find it useful in your future projects.
 
 ### Features
 
 - Minimal
-- TypeScript v4
+- TypeScript v5
 - Testing with Jest
 - Linting with Eslint and Prettier
 - Pre-commit hooks with Husky
 - VS Code debugger scripts
-- Local development with Nodemon
+- Nodemon integrated
+- Updated every month
+- Sequelize ORM integration
+- Easier error handling
+- Validation with joi
+- Awesome response template for managing logs
+- Winston integrated
+- Support for multiple environments
 
 ### Scripts
 
 #### `npm run start:dev`
 
-Starts the application in development using `nodemon` and `ts-node` to do hot reloading.
+Starts the application in development using `nodemon` and `rimraf` to do hot reloading.
+
+#### `npm run start:qa`
+
+Starts the application in qa (UAT) using `nodemon` and `rimraf` to do hot reloading.
+
+#### `npm run start:prod`
+
+Starts the application in production using `nodemon` and `rimraf` to do hot reloading.
+
+#### `npm run start:local`
+
+Starts the application in local using `nodemon` and `rimraf` to do hot reloading.
 
 #### `npm run start`
 
