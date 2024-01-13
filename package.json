@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "rimraf ./build && tsc",
-    "start:dev": "npx nodemon",
+    "start:dev": "set NODE_ENV=development && npx nodemon",
+    "start:qa": "set NODE_ENV=qa && npx nodemon",
+    "start:prod": "set NODE_ENV=production && npx nodemon",
+    "start:local": "set NODE_ENV=local && npx nodemon",
     "start": "npm run build && node build/index.js",
     "lint": "eslint . --ext .ts",
     "prettier-format": "run-script-os",

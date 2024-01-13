@@ -105,3 +105,13 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# dotenv environment variables file
+.env
+.env.test
+.env.example
+.env.prod
+development.env
+qa.env
+local.env
+prod.env
