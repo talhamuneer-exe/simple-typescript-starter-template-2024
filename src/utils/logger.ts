@@ -1,36 +1,13 @@
 import stream from 'stream';
-
-import appInsights = require('applicationinsights');
 import winston from 'winston';
 
-import { appConfig, environment } from '../config/config';
-
-import { AiTransport } from './ai-transport';
-
-appInsights
-  .setup(appConfig.appInsightsKey)
-  .setAutoDependencyCorrelation(true)
-  .setAutoCollectRequests(true)
-  .setAutoCollectPerformance(true, true)
-  .setAutoCollectExceptions(true)
-  .setAutoCollectDependencies(true)
-  .setAutoCollectConsole(true, true)
-  .setUseDiskRetryCaching(true)
-  .setSendLiveMetrics(false)
-  .start();
-
-const aIclient = appInsights.defaultClient;
-aIclient.context.tags[aIclient.context.keys.cloudRole] = appConfig.serviceName;
+import { environment } from '../config/config';
 
 const level = environment === 'production' ? 'info' : 'debug';
 
 const options: winston.LoggerOptions = {
   transports: [
     new winston.transports.Console({
-      level,
-    }),
-    new AiTransport({
-      client: aIclient,
       level,
     }),
   ],
@@ -54,9 +31,6 @@ const logMessage = (level: LogLevels, code: string, message: unknown) => {
 };
 
 class Logger {
-  getAiClient() {
-    return aIclient;
-  }
   info(code: string, message: any) {
     logMessage('info', code, message);
   }
@@ -65,13 +39,6 @@ class Logger {
   }
   error(code: string, message: any) {
     logMessage('error', code, message);
-  }
-  trackEvent(name: string, data: any) {
-    aIclient.trackEvent({
-      name,
-      time: new Date(),
-      properties: data!,
-    });
   }
 }
 
