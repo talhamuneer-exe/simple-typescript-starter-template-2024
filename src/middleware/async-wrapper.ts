@@ -1,4 +1,3 @@
-/* eslint-disable functional/prefer-immutable-types */
 import { NextFunction, Request, Response } from 'express';
 
 type ExpressMiddleware = (

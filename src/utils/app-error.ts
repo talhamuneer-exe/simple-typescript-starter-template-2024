@@ -19,7 +19,10 @@ enum ErrorType {
 const notFound = [ErrorType.NOT_FOUND, ErrorType.NO_ENTRY, ErrorType.NO_DATA];
 
 export abstract class AppError extends Error {
-  constructor(public type: ErrorType, public message: string = 'error') {
+  constructor(
+    public type: ErrorType,
+    public message: string = 'error',
+  ) {
     super(type);
   }
 

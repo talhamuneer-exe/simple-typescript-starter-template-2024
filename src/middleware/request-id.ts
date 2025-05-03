@@ -1,6 +1,3 @@
-/* eslint-disable functional/no-return-void */
-/* eslint-disable functional/immutable-data */
-/* eslint-disable functional/prefer-immutable-types */
 import { NextFunction, Request, Response } from 'express';
 import { v4 as uuidV4 } from 'uuid';
 export const requestId = (
