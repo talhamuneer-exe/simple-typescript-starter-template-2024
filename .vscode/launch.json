@@ -5,10 +5,18 @@
       "name": "Attach by Process ID",
       "processId": "${command:PickProcess}",
       "request": "attach",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "type": "node"
+    },
+    {
+      "name": "Attach via Inspector Protocol",
+      "type": "node",
+      "request": "attach",
+      "port": 9229, // Must match the port in `--inspect=PORT`
+      "protocol": "inspector",
+      "restart": true, // Optional: Auto-reconnect if the app restarts
+      "address": "localhost", // Optional: Default is "127.0.0.1"
+      "skipFiles": ["<node_internals>/**"] // Optional: Skip Node internals
     },
     {
       "type": "node",
