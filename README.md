@@ -1,6 +1,6 @@
-# 🧰 Simple TypeScript Starter | 2024
+# 🧰 Simple TypeScript Starter | 2025-26
 
-> A blog is soon coming on [my website](https://codedcoffee.com.pk). This template is particularly focused around Domain-Driven Design and large-scale enterprise application patterns. Hope you find it useful in your future projects.
+> This template is particularly focused around Domain-Driven Design and large-scale enterprise application patterns. Hope you find it useful in your future projects.
 
 ### Features
 
