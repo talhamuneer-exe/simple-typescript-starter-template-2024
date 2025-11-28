@@ -1,6 +1,8 @@
 import { Response } from 'express';
 
 import { ErrorCode } from './error-codes';
+// TODO: Uncomment this when we have a way to merge custom data with server metadata
+// import { mergeWithServerMetadata } from './server-metadata';
 
 export enum ResponseStatus {
   SUCCESS = 200,
@@ -126,9 +128,23 @@ abstract class ApiResponse {
     }
 
     // Add data if present
+
     if (this.data !== null) {
       response.data = this.data;
     }
+    // For SuccessResponse, automatically merge with server metadata
+    // if (this.data !== null) {
+    //   if (this.statusCode === ResponseStatus.SUCCESS) {
+    //     // Merge custom data with standardized server metadata
+    //     response.data = mergeWithServerMetadata(this.data);
+    //   } else {
+    //     // For error responses, use data as-is
+    //     response.data = this.data;
+    //   }
+    // } else if (this.statusCode === ResponseStatus.SUCCESS) {
+    //   // Even if no custom data, include server metadata for success responses
+    //   response.data = mergeWithServerMetadata();
+    // }
 
     // Include error code for error responses
     if (this.errorCode) {
@@ -141,12 +157,22 @@ abstract class ApiResponse {
     }
 
     // Add additional metadata in non-production environments
+    // Only include if at least one field exists to avoid empty objects
     if (!isProduction && metadata) {
-      response.metadata = {
-        ip: metadata.ip,
-        userAgent: metadata.userAgent,
-        userId: metadata.userId,
-      };
+      const metadataFields: {
+        ip?: string;
+        userAgent?: string;
+        userId?: string;
+      } = {};
+
+      if (metadata.ip) metadataFields.ip = metadata.ip;
+      if (metadata.userAgent) metadataFields.userAgent = metadata.userAgent;
+      if (metadata.userId) metadataFields.userId = metadata.userId;
+
+      // Only add metadata object if it has at least one field
+      if (Object.keys(metadataFields).length > 0) {
+        response.metadata = metadataFields;
+      }
     }
 
     this.res.status(this.statusCode).json(response);

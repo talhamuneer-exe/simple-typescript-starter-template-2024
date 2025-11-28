@@ -1,23 +1,95 @@
 import { Request, Response, NextFunction } from 'express';
-import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
 import { body, validationResult } from 'express-validator';
 
 /**
- * MongoDB Injection Prevention
+ * Sanitize object to prevent MongoDB injection
  * Removes any keys that start with $ or contain . from user input
  */
-export const mongoSanitization = mongoSanitize({
-  replaceWith: '_',
-  onSanitize: ({ key }) => {
-    // Log potential injection attempts
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn(
-        `[SECURITY] Potential MongoDB injection attempt detected: ${key}`,
-      );
+const sanitizeMongoObject = (obj: unknown, replaceWith = '_'): unknown => {
+  if (obj === null || obj === undefined) {
+    return obj;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => sanitizeMongoObject(item, replaceWith));
+  }
+
+  if (typeof obj === 'object') {
+    const sanitized: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      // Check for MongoDB operators ($, .)
+      if (key.startsWith('$') || key.includes('.')) {
+        // Log potential injection attempts
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(
+            `[SECURITY] Potential MongoDB injection attempt detected: ${key}`,
+          );
+        }
+        // Replace dangerous keys
+        const safeKey = key
+          .replace(/^\$/, replaceWith)
+          .replace(/\./g, replaceWith);
+        sanitized[safeKey] = sanitizeMongoObject(value, replaceWith);
+      } else {
+        sanitized[key] = sanitizeMongoObject(value, replaceWith);
+      }
     }
-  },
-});
+    return sanitized;
+  }
+
+  return obj;
+};
+
+/**
+ * MongoDB Injection Prevention
+ * Removes any keys that start with $ or contain . from user input
+ * Custom implementation that works with read-only req.query
+ */
+export const mongoSanitization = (
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+): void => {
+  // Sanitize request body
+  if (req.body && typeof req.body === 'object') {
+    req.body = sanitizeMongoObject(req.body) as typeof req.body;
+  }
+
+  // Check query parameters for MongoDB injection attempts (but don't mutate since it's read-only)
+  if (req.query && typeof req.query === 'object') {
+    const dangerousKeys: string[] = [];
+    for (const key of Object.keys(req.query)) {
+      if (key.startsWith('$') || key.includes('.')) {
+        dangerousKeys.push(key);
+        // Log potential injection attempts
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(
+            `[SECURITY] Potential MongoDB injection attempt detected in query: ${key}`,
+          );
+        }
+      }
+    }
+    // If dangerous keys found, reject the request
+    if (dangerousKeys.length > 0) {
+      _res.status(400).json({
+        requestId: (req as Request & { id?: string }).id,
+        message:
+          'Invalid query parameters detected. MongoDB injection attempt blocked.',
+        errorCode: 'VAL-001',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+  }
+
+  // Sanitize params
+  if (req.params && typeof req.params === 'object') {
+    req.params = sanitizeMongoObject(req.params) as typeof req.params;
+  }
+
+  next();
+};
 
 /**
  * HTTP Parameter Pollution Prevention
@@ -71,9 +143,22 @@ export const xssSanitization = (
     req.body = sanitizeObject(req.body) as typeof req.body;
   }
 
-  // Sanitize query parameters
+  // Check query parameters for XSS (but don't mutate since it's read-only)
+  // XSS in query params is less critical as they're URL-encoded by browsers
   if (req.query && typeof req.query === 'object') {
-    req.query = sanitizeObject(req.query) as typeof req.query;
+    for (const [key, value] of Object.entries(req.query)) {
+      if (typeof value === 'string') {
+        // Check for potential XSS patterns (log warning but don't block)
+        const xssPatterns = [/<script/i, /javascript:/i, /on\w+\s*=/i];
+        if (xssPatterns.some((pattern) => pattern.test(value))) {
+          if (process.env.NODE_ENV !== 'production') {
+            console.warn(
+              `[SECURITY] Potential XSS attempt detected in query parameter: ${key}`,
+            );
+          }
+        }
+      }
+    }
   }
 
   next();

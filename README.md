@@ -87,17 +87,6 @@ Format your code.
 
 Format your code in watch mode, waiting for file changes.
 
-### Documentation
-
-- **[Error System Guide](./ERROR_SYSTEM.md)** - Complete guide to the systematic error handling system
-- **[Route Codes Guide](./ROUTE_CODES_GUIDE.md)** - Guide to using route-specific success and error codes
-- **[Request & Response Tracking](./REQUEST_RESPONSE_TRACKING.md)** - Comprehensive request/response tracking and metadata
-- **[ESLint Custom Rules](./ESLINT_CUSTOM_RULES.md)** - Custom linting rules for response consistency
-- **[Testing Guide](./TESTING_GUIDE.md)** - Complete guide to writing tests with Jest
-- **[Testing Troubleshooting](./TESTING_TROUBLESHOOTING.md)** - Troubleshooting guide for test issues
-- **[Security Guide](./SECURITY_GUIDE.md)** - Comprehensive security features and best practices
-- **[Improvements Summary](./IMPROVEMENTS.md)** - Summary of all improvements made to the boilerplate
-
 ### Quick Start: Route-Specific Codes
 
 Define codes for your routes:
