@@ -1,6 +1,9 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import { validateEnvironmentVariables } from './env-validation';
 // import { Options } from 'sequelize';
+
+// Load environment variables
 if (process.env.NODE_ENV) {
   const currentPath = __dirname;
   const parentPath = path.resolve(path.resolve(currentPath, '..'), '..');
@@ -12,6 +15,16 @@ if (process.env.NODE_ENV) {
 } else {
   console.log('CLOUD ENVIRONMENT INITIALIZING.....');
   dotenv.config();
+}
+
+// Validate environment variables (only in non-test environments)
+if (process.env.NODE_ENV !== 'test') {
+  try {
+    validateEnvironmentVariables();
+  } catch (error) {
+    console.error('Environment validation failed:', error);
+    process.exit(1);
+  }
 }
 
 export const environment = process.env.NODE_ENV;

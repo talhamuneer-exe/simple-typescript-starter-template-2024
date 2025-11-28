@@ -3,3 +3,8 @@ export * from './error-handler';
 export * from './request-id';
 export * from './async-wrapper';
 export * from './request-metadata';
+export * from './security-headers';
+export * from './rate-limiter';
+export * from './input-sanitizer';
+export * from './request-limits';
+export * from './security-logger';
