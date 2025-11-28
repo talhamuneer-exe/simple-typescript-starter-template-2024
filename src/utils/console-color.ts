@@ -14,6 +14,6 @@ export const consoleColor = (color: string) => {
 };
 
 export const chunkArray = (arr: any, size: number) =>
-  Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+  Array.from({ length: Math.ceil(arr.length / size) }, (_v, i) =>
     arr.slice(i * size, i * size + size),
   );

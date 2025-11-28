@@ -3,13 +3,16 @@ import express from 'express';
 import morganBody from 'morgan-body';
 
 import { appConfig } from './config/config';
-import { errorHandler, requestId } from './middleware';
+import { errorHandler, requestMetadata } from './middleware';
 import { AppRouter } from './routes';
 import { LoggingStream, NotFoundError } from './utils';
 
 export const app: express.Application = express();
 app.use(express.json());
-app.use(requestId);
+
+// Use requestMetadata middleware (replaces requestId with enhanced tracking)
+app.use(requestMetadata);
+
 morganBody(app, {
   noColors: true,
   prettify: false,

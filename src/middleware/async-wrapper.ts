@@ -1,21 +1,19 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response, RequestHandler } from 'express';
 
-type ExpressMiddleware = (
+type AsyncRequestHandler = (
   request: Request,
   response: Response,
-  next?: NextFunction,
+  next: NextFunction,
 ) => Promise<unknown>;
 
-export const asyncWrapper = (asyncRouteHandler: ExpressMiddleware) => {
+export const asyncWrapper = (
+  asyncRouteHandler: AsyncRequestHandler,
+): RequestHandler => {
   return function (
     request: Request,
     response: Response,
     next: NextFunction,
-  ): unknown {
-    return asyncRouteHandler(request, response, next)
-      .then((res) => {
-        return res;
-      })
-      .catch(next);
+  ): void {
+    Promise.resolve(asyncRouteHandler(request, response, next)).catch(next);
   };
 };

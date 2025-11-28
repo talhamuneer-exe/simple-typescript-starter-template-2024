@@ -21,8 +21,52 @@ const server = app.listen(app.get('port'), async () => {
   );
 });
 
-process.on('uncaughtException', (error) => {
-  logger.error('UNHANDLED_REJECTION', error.message);
+// Handle uncaught exceptions
+process.on('uncaughtException', (error: Error) => {
+  logger.error('UNCAUGHT_EXCEPTION', {
+    message: error.message,
+    name: error.name,
+    stack: error.stack,
+  });
+  
+  // Graceful shutdown
+  server.close(() => {
+    logger.info('SERVER_CLOSED', 'Server closed due to uncaught exception');
+    process.exit(1);
+  });
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason: unknown, promise: Promise<unknown>) => {
+  logger.error('UNHANDLED_REJECTION', {
+    reason: reason instanceof Error ? reason.message : String(reason),
+    promise: promise.toString(),
+    ...(reason instanceof Error && { stack: reason.stack }),
+  });
+  
+  // Graceful shutdown
+  server.close(() => {
+    logger.info('SERVER_CLOSED', 'Server closed due to unhandled rejection');
+    process.exit(1);
+  });
+});
+
+// Handle SIGTERM (e.g., from Docker)
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM_RECEIVED', 'SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    logger.info('SERVER_CLOSED', 'HTTP server closed');
+    process.exit(0);
+  });
+});
+
+// Handle SIGINT (Ctrl+C)
+process.on('SIGINT', () => {
+  logger.info('SIGINT_RECEIVED', 'SIGINT signal received: closing HTTP server');
+  server.close(() => {
+    logger.info('SERVER_CLOSED', 'HTTP server closed');
+    process.exit(0);
+  });
 });
 
 export default server;

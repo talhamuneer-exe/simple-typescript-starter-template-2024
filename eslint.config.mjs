@@ -8,14 +8,19 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import js from '@eslint/js';
 import { FlatCompat } from '@eslint/eslintrc';
+import { createRequire } from 'module';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
 const compat = new FlatCompat({
   baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended,
   allConfig: js.configs.all,
 });
+
+// Load custom rules
+const customRules = require('./eslint-rules/index.js');
 
 export default defineConfig([
   globalIgnores([
@@ -38,6 +43,9 @@ export default defineConfig([
       '@typescript-eslint': typescriptEslint,
       prettier,
       jest,
+      'custom-rules': {
+        rules: customRules,
+      },
     },
 
     languageOptions: {
@@ -60,7 +68,7 @@ export default defineConfig([
           semi: true,
         },
       ],
-      '@typescript-eslint/no-explicit-any': 'warn', // Disable the rule
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
@@ -69,7 +77,10 @@ export default defineConfig([
           ignoreRestSiblings: true,
         },
       ],
+      // Custom rules for response consistency
+      'custom-rules/response-consistency': 'error',
+      'custom-rules/enforce-response-format': 'warn',
+      'custom-rules/require-response-code': 'warn',
     },
   },
 ]);
-
