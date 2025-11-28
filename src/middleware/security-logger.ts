@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../utils';
 import { securityConfig } from '../config/security-config';
+import { securityEventsTotal, rateLimitHits } from './metrics';
 
 /**
  * Security Event Logger
@@ -8,7 +9,12 @@ import { securityConfig } from '../config/security-config';
  */
 
 export interface SecurityEvent {
-  type: 'AUTH_FAILURE' | 'RATE_LIMIT' | 'INJECTION_ATTEMPT' | 'SUSPICIOUS_ACTIVITY' | 'VALIDATION_FAILURE';
+  type:
+    | 'AUTH_FAILURE'
+    | 'RATE_LIMIT'
+    | 'INJECTION_ATTEMPT'
+    | 'SUSPICIOUS_ACTIVITY'
+    | 'VALIDATION_FAILURE';
   message: string;
   requestId?: string;
   ip?: string;
@@ -48,8 +54,18 @@ export const securityLogger = (
   _res: Response,
   next: NextFunction,
 ): void => {
-  const metadata = (req as Request & { metadata?: { ip?: string; path?: string; method?: string; userId?: string; requestId?: string } }).metadata;
-  
+  const metadata = (
+    req as Request & {
+      metadata?: {
+        ip?: string;
+        path?: string;
+        method?: string;
+        userId?: string;
+        requestId?: string;
+      };
+    }
+  ).metadata;
+
   // Log suspicious patterns
   if (metadata) {
     // Check for suspicious user agents
@@ -72,6 +88,11 @@ export const securityLogger = (
         method: metadata.method,
         details: { userAgent },
       });
+
+      // Track security event metric
+      securityEventsTotal
+        .labels('SUSPICIOUS_ACTIVITY', metadata.path || 'unknown')
+        .inc();
     }
 
     // Check for suspicious query parameters
@@ -85,6 +106,11 @@ export const securityLogger = (
         endpoint: metadata.path,
         method: metadata.method,
       });
+
+      // Track security event metric
+      securityEventsTotal
+        .labels('SUSPICIOUS_ACTIVITY', metadata.path || 'unknown')
+        .inc();
     }
   }
 
@@ -103,7 +129,16 @@ export function logAuthFailure(
     return;
   }
 
-  const metadata = (req as Request & { metadata?: { ip?: string; path?: string; method?: string; requestId?: string } }).metadata;
+  const metadata = (
+    req as Request & {
+      metadata?: {
+        ip?: string;
+        path?: string;
+        method?: string;
+        requestId?: string;
+      };
+    }
+  ).metadata;
 
   logSecurityEvent({
     type: 'AUTH_FAILURE',
@@ -114,13 +149,18 @@ export function logAuthFailure(
     method: metadata?.method,
     userId,
   });
+
+  // Track security event metric
+  securityEventsTotal.labels('AUTH_FAILURE', metadata?.path || 'unknown').inc();
 }
 
 /**
  * Log rate limit event
  */
 export function logRateLimit(req: Request, endpoint: string): void {
-  const metadata = (req as Request & { metadata?: { ip?: string; requestId?: string } }).metadata;
+  const metadata = (
+    req as Request & { metadata?: { ip?: string; requestId?: string } }
+  ).metadata;
 
   logSecurityEvent({
     type: 'RATE_LIMIT',
@@ -129,6 +169,10 @@ export function logRateLimit(req: Request, endpoint: string): void {
     ip: metadata?.ip,
     endpoint,
   });
+
+  // Track rate limit metric
+  rateLimitHits.labels(endpoint, metadata?.ip || 'unknown').inc();
+  securityEventsTotal.labels('RATE_LIMIT', endpoint).inc();
 }
 
 /**
@@ -139,7 +183,16 @@ export function logInjectionAttempt(
   type: 'SQL' | 'NoSQL' | 'XSS',
   details?: Record<string, unknown>,
 ): void {
-  const metadata = (req as Request & { metadata?: { ip?: string; path?: string; method?: string; requestId?: string } }).metadata;
+  const metadata = (
+    req as Request & {
+      metadata?: {
+        ip?: string;
+        path?: string;
+        method?: string;
+        requestId?: string;
+      };
+    }
+  ).metadata;
 
   logSecurityEvent({
     type: 'INJECTION_ATTEMPT',
@@ -150,5 +203,9 @@ export function logInjectionAttempt(
     method: metadata?.method,
     details,
   });
-}
 
+  // Track security event metric
+  securityEventsTotal
+    .labels('INJECTION_ATTEMPT', metadata?.path || 'unknown')
+    .inc();
+}

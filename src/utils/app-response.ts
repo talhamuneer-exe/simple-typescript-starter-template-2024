@@ -1,4 +1,3 @@
-/// <reference path="../types/index.d.ts" />
 import { Response } from 'express';
 
 import { ErrorCode } from './error-codes';
@@ -20,26 +19,26 @@ interface ApiResponseData {
   requestId: string;
   correlationId?: string; // For distributed tracing
   traceId?: string; // For request tracing
-  
+
   // Response Data
   data?: unknown;
   message: string | Record<string, unknown>;
-  
+
   // Error Information
   errorCode?: ErrorCode;
   responseCode?: string; // Route-specific response code (for success/error)
-  
+
   // Timestamps
   timestamp: string; // Response timestamp in UTC
   requestTimestamp?: string; // When request was received (UTC)
-  
+
   // Performance Metrics
   processingTime?: number; // Response time in milliseconds
-  
+
   // Request Context (for debugging)
   endpoint?: string; // API endpoint path
   method?: string; // HTTP method
-  
+
   // Additional Metadata (only in non-production)
   metadata?: {
     ip?: string;
@@ -74,7 +73,21 @@ abstract class ApiResponse {
   ) {}
 
   public send(): void {
-    const metadata = (this.res as Response & { metadata?: { requestId?: string; correlationId?: string; traceId?: string; requestTimestamp?: string; path?: string; method?: string; ip?: string; userAgent?: string; userId?: string } }).metadata;
+    const metadata = (
+      this.res as Response & {
+        metadata?: {
+          requestId?: string;
+          correlationId?: string;
+          traceId?: string;
+          requestTimestamp?: string;
+          path?: string;
+          method?: string;
+          ip?: string;
+          userAgent?: string;
+          userId?: string;
+        };
+      }
+    ).metadata;
     const startTime = this.res.locals.startTime;
     const isProduction = process.env.NODE_ENV === 'production';
     const resId = (this.res as Response & { id?: string }).id;
@@ -147,7 +160,14 @@ export class NotFoundResponse extends ApiResponse {
     errorCode?: ErrorCode,
     responseCode?: string, // Route-specific error code
   ) {
-    super(res, ResponseStatus.NOT_FOUND, message, null, errorCode, responseCode);
+    super(
+      res,
+      ResponseStatus.NOT_FOUND,
+      message,
+      null,
+      errorCode,
+      responseCode,
+    );
   }
 }
 
@@ -158,7 +178,14 @@ export class InternalErrorResponse extends ApiResponse {
     errorCode?: ErrorCode,
     responseCode?: string, // Route-specific error code
   ) {
-    super(res, ResponseStatus.INTERNAL_ERROR, message, null, errorCode, responseCode);
+    super(
+      res,
+      ResponseStatus.INTERNAL_ERROR,
+      message,
+      null,
+      errorCode,
+      responseCode,
+    );
   }
 }
 
@@ -169,7 +196,14 @@ export class BadRequestResponse extends ApiResponse {
     errorCode?: ErrorCode,
     responseCode?: string, // Route-specific error code
   ) {
-    super(res, ResponseStatus.BAD_REQUEST, message, null, errorCode, responseCode);
+    super(
+      res,
+      ResponseStatus.BAD_REQUEST,
+      message,
+      null,
+      errorCode,
+      responseCode,
+    );
   }
 }
 
@@ -190,7 +224,14 @@ export class NoContentResponse extends ApiResponse {
     message: string,
     responseCode?: string, // Route-specific success code
   ) {
-    super(res, ResponseStatus.NO_CONTENT, message, null, undefined, responseCode);
+    super(
+      res,
+      ResponseStatus.NO_CONTENT,
+      message,
+      null,
+      undefined,
+      responseCode,
+    );
   }
 }
 
@@ -201,7 +242,14 @@ export class UnauthorizedResponse extends ApiResponse {
     errorCode?: ErrorCode,
     responseCode?: string, // Route-specific error code
   ) {
-    super(res, ResponseStatus.UNAUTHORIZED, message, null, errorCode, responseCode);
+    super(
+      res,
+      ResponseStatus.UNAUTHORIZED,
+      message,
+      null,
+      errorCode,
+      responseCode,
+    );
   }
 }
 
@@ -212,7 +260,14 @@ export class ForbiddenResponse extends ApiResponse {
     errorCode?: ErrorCode,
     responseCode?: string, // Route-specific error code
   ) {
-    super(res, ResponseStatus.FORBIDDEN, message, null, errorCode, responseCode);
+    super(
+      res,
+      ResponseStatus.FORBIDDEN,
+      message,
+      null,
+      errorCode,
+      responseCode,
+    );
   }
 }
 

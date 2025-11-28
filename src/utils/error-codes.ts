@@ -157,4 +157,3 @@ export const ErrorMessages: Record<ErrorCode, string> = {
   [ErrorCode.SYS_002]: 'Environment error',
   [ErrorCode.SYS_003]: 'Memory error',
 };
-

@@ -13,7 +13,7 @@ jest.setTimeout(10000);
 afterEach(async () => {
   // Clear all timers
   jest.clearAllTimers();
-  
+
   // Wait for any pending promises to resolve
   await new Promise((resolve) => setImmediate(resolve));
 });

@@ -26,7 +26,7 @@ export function createSuccessResponse(
   customMessage?: string,
 ): SuccessResponse {
   const routeCode = responseCodeRegistry.getSuccessCode(routeName, codeKey);
-  
+
   if (!routeCode) {
     // Fallback to generic success if route code not found
     return new SuccessResponse(
@@ -53,9 +53,15 @@ export function createErrorResponse(
   codeKey: string,
   systemErrorCode: ErrorCode,
   customMessage?: string,
-): BadRequestResponse | NotFoundResponse | UnauthorizedResponse | ForbiddenResponse | ConflictResponse | InternalErrorResponse {
+):
+  | BadRequestResponse
+  | NotFoundResponse
+  | UnauthorizedResponse
+  | ForbiddenResponse
+  | ConflictResponse
+  | InternalErrorResponse {
   const routeCode = responseCodeRegistry.getErrorCode(routeName, codeKey);
-  
+
   if (!routeCode) {
     // Fallback to generic error if route code not found
     return new BadRequestResponse(
@@ -67,7 +73,7 @@ export function createErrorResponse(
 
   // Determine response type based on system error code prefix
   const prefix = systemErrorCode.split('-')[0];
-  
+
   switch (prefix) {
     case 'NF':
       return new NotFoundResponse(
@@ -126,4 +132,3 @@ export function getRouteErrorCode(
 ): ResponseCode | undefined {
   return responseCodeRegistry.getErrorCode(routeName, codeKey);
 }
-

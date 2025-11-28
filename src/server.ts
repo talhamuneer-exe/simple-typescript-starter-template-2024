@@ -28,7 +28,7 @@ process.on('uncaughtException', (error: Error) => {
     name: error.name,
     stack: error.stack,
   });
-  
+
   // Graceful shutdown
   server.close(() => {
     logger.info('SERVER_CLOSED', 'Server closed due to uncaught exception');
@@ -37,23 +37,29 @@ process.on('uncaughtException', (error: Error) => {
 });
 
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (reason: unknown, promise: Promise<unknown>) => {
-  logger.error('UNHANDLED_REJECTION', {
-    reason: reason instanceof Error ? reason.message : String(reason),
-    promise: promise.toString(),
-    ...(reason instanceof Error && { stack: reason.stack }),
-  });
-  
-  // Graceful shutdown
-  server.close(() => {
-    logger.info('SERVER_CLOSED', 'Server closed due to unhandled rejection');
-    process.exit(1);
-  });
-});
+process.on(
+  'unhandledRejection',
+  (reason: unknown, promise: Promise<unknown>) => {
+    logger.error('UNHANDLED_REJECTION', {
+      reason: reason instanceof Error ? reason.message : String(reason),
+      promise: promise.toString(),
+      ...(reason instanceof Error && { stack: reason.stack }),
+    });
+
+    // Graceful shutdown
+    server.close(() => {
+      logger.info('SERVER_CLOSED', 'Server closed due to unhandled rejection');
+      process.exit(1);
+    });
+  },
+);
 
 // Handle SIGTERM (e.g., from Docker)
 process.on('SIGTERM', () => {
-  logger.info('SIGTERM_RECEIVED', 'SIGTERM signal received: closing HTTP server');
+  logger.info(
+    'SIGTERM_RECEIVED',
+    'SIGTERM signal received: closing HTTP server',
+  );
   server.close(() => {
     logger.info('SERVER_CLOSED', 'HTTP server closed');
     process.exit(0);

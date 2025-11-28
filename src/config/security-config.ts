@@ -7,12 +7,22 @@ import { environment } from './config';
 export const securityConfig = {
   // CORS Configuration
   cors: {
-    origin: environment === 'production' 
-      ? process.env.ALLOWED_ORIGINS?.split(',') || []
-      : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'],
+    origin:
+      environment === 'production'
+        ? process.env.ALLOWED_ORIGINS?.split(',') || []
+        : [
+            'http://localhost:5001',
+            'http://localhost:3001',
+            'http://localhost:5173',
+          ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID', 'X-Correlation-ID'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Request-ID',
+      'X-Correlation-ID',
+    ],
     exposedHeaders: ['X-Request-ID', 'X-Correlation-ID', 'X-Trace-ID'],
     maxAge: 86400, // 24 hours
   },
@@ -72,4 +82,3 @@ export const securityConfig = {
     logSuspiciousActivity: true,
   },
 };
-

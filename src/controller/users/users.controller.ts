@@ -79,37 +79,35 @@ export class UsersController {
    * Route: GET /api/users/:id
    */
   public static async getUserById(req: Request, res: Response): Promise<void> {
-    try {
-      const { id } = req.params;
+    const { id } = req.params;
 
-      if (!id) {
-        throw new NotFoundError('User ID is required', ErrorCode.NF_001);
-      }
-
-      // Simulate fetching user (replace with actual database call)
-      const user = { id: parseInt(id), name: 'John Doe', email: 'john@example.com' };
-
-      if (!user) {
-        // Use route-specific error code
-        const errorCode = GET_USERS_CODES.error.USERS_FETCH_FAILED;
-        throw new NotFoundError(
-          errorCode.message,
-          ErrorCode.NF_001, // System error code
-        );
-      }
-
-      const successCode = GET_USERS_CODES.success.USERS_RETRIEVED;
-      const response = new SuccessResponse(
-        res,
-        successCode.message,
-        { user },
-        successCode.code, // Route-specific success code
-      );
-      response.send();
-    } catch (error) {
-      // Error will be handled by error middleware
-      throw error;
+    if (!id) {
+      throw new NotFoundError('User ID is required', ErrorCode.NF_001);
     }
+
+    // Simulate fetching user (replace with actual database call)
+    const user = {
+      id: parseInt(id),
+      name: 'John Doe',
+      email: 'john@example.com',
+    };
+
+    if (!user) {
+      // Use route-specific error code
+      const errorCode = GET_USERS_CODES.error.USERS_FETCH_FAILED;
+      throw new NotFoundError(
+        errorCode.message,
+        ErrorCode.NF_001, // System error code
+      );
+    }
+
+    const successCode = GET_USERS_CODES.success.USERS_RETRIEVED;
+    const response = new SuccessResponse(
+      res,
+      successCode.message,
+      { user },
+      successCode.code, // Route-specific success code
+    );
+    response.send();
   }
 }
-

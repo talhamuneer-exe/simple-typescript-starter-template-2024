@@ -8,3 +8,4 @@ export * from './rate-limiter';
 export * from './input-sanitizer';
 export * from './request-limits';
 export * from './security-logger';
+export * from './metrics';

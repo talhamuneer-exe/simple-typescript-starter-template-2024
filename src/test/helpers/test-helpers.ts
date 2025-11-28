@@ -79,11 +79,11 @@ export function createMockMetadata(
 
 /**
  * Wait for a specified amount of time (useful for async tests)
- * 
+ *
  * For better test performance and to avoid open handles, consider using:
  * - jest.useFakeTimers() and jest.advanceTimersByTime() for timer-based tests
  * - Promise.resolve() for immediate async operations
- * 
+ *
  * @param ms - Milliseconds to wait
  * @returns Promise that resolves after the specified time
  */
@@ -94,12 +94,8 @@ export function wait(ms: number): Promise<void> {
 /**
  * Create a mock error
  */
-export function createMockError(
-  message: string,
-  name = 'Error',
-): Error {
+export function createMockError(message: string, name = 'Error'): Error {
   const error = new Error(message);
   error.name = name;
   return error;
 }
-

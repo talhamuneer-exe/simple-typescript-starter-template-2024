@@ -17,6 +17,8 @@ import {
   contentTypeValidator,
   parameterLimit,
   securityLogger,
+  metricsMiddleware,
+  metricsHandler,
 } from './middleware';
 import { AppRouter } from './routes';
 import { LoggingStream, NotFoundError } from './utils';
@@ -32,9 +34,7 @@ app.use(securityHeaders);
 app.use(customSecurityHeaders);
 
 // 2. Request Size Limits
-app.use(
-  express.json({ limit: `${securityConfig.requestLimits.json} bytes` }),
-);
+app.use(express.json({ limit: `${securityConfig.requestLimits.json} bytes` }));
 app.use(
   express.urlencoded({
     extended: true,
@@ -70,6 +70,9 @@ app.use(securityLogger);
 // Request Metadata (for tracking)
 app.use(requestMetadata);
 
+// Metrics Middleware (after request metadata for route tracking)
+app.use(metricsMiddleware);
+
 // Request Logging
 morganBody(app, {
   noColors: true,
@@ -98,6 +101,9 @@ app.use(
     maxAge: securityConfig.cors.maxAge,
   }),
 );
+
+// Metrics Endpoint (before API routes to avoid rate limiting)
+app.get('/metrics', metricsHandler);
 
 // API Routes
 app.use('/api', AppRouter);

@@ -1,14 +1,14 @@
 /**
  * Route-Specific Code Definitions
  * Define codes for each route/endpoint here
- * 
+ *
  * Format: ROUTE-XXX-TYPE
  * - ROUTE: Route identifier (e.g., USR for users, AUTH for auth)
  * - XXX: Sequential number
  * - TYPE: SUC (success) or ERR (error)
  */
 
-import { createRouteCodes } from './response-codes';
+import { createRouteCodes, responseCodeRegistry } from './response-codes';
 
 /**
  * API Health Check Route Codes
@@ -137,13 +137,12 @@ export const DELETE_USER_CODES = createRouteCodes('delete-user', {
 export function getRouteCodes(routeName: string) {
   return {
     success: (codeKey: string) => {
-      const codes = require('./response-codes').responseCodeRegistry.getSuccessCode(routeName, codeKey);
+      const codes = responseCodeRegistry.getSuccessCode(routeName, codeKey);
       return codes;
     },
     error: (codeKey: string) => {
-      const codes = require('./response-codes').responseCodeRegistry.getErrorCode(routeName, codeKey);
+      const codes = responseCodeRegistry.getErrorCode(routeName, codeKey);
       return codes;
     },
   };
 }
-

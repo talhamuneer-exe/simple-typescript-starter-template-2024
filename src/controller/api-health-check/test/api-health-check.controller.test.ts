@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 import { apiHealthCheckController } from '../api-health-check.controller';
-import { createMockRequest, createMockResponse, createMockMetadata } from '../../../test/helpers';
+import {
+  createMockRequest,
+  createMockResponse,
+  createMockMetadata,
+} from '../../../test/helpers';
 
 describe('API Health Check Controller', () => {
   let mockRequest: Partial<Request>;
@@ -29,7 +33,7 @@ describe('API Health Check Controller', () => {
       expect(mockResponse.json).toHaveBeenCalled();
 
       const jsonCall = (mockResponse.json as jest.Mock).mock.calls[0][0];
-      
+
       // Check response structure
       expect(jsonCall).toHaveProperty('requestId');
       expect(jsonCall).toHaveProperty('message');
@@ -67,7 +71,7 @@ describe('API Health Check Controller', () => {
 
       // Assert
       const jsonCall = (mockResponse.json as jest.Mock).mock.calls[0][0];
-      
+
       expect(jsonCall.requestId).toBeDefined();
       if (jsonCall.correlationId) {
         expect(jsonCall.correlationId).toBeDefined();
@@ -95,7 +99,7 @@ describe('API Health Check Controller', () => {
 
       // Assert
       const jsonCall = (mockResponse.json as jest.Mock).mock.calls[0][0];
-      
+
       // Processing time may not always be included if startTime is missing
       if (jsonCall.processingTime !== undefined) {
         expect(jsonCall.processingTime).toBeGreaterThanOrEqual(0);
@@ -116,16 +120,19 @@ describe('API Health Check Controller', () => {
 
       // Assert
       const jsonCall = (mockResponse.json as jest.Mock).mock.calls[0][0];
-      
+
       // Check timestamp format (ISO 8601 UTC)
-      expect(jsonCall.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+      expect(jsonCall.timestamp).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+      );
       expect(jsonCall.timestamp).toContain('Z');
-      
+
       // requestTimestamp is optional, check if present
       if (jsonCall.requestTimestamp) {
-        expect(jsonCall.requestTimestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+        expect(jsonCall.requestTimestamp).toMatch(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+        );
       }
     });
   });
 });
-

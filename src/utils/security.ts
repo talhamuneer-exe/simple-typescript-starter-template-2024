@@ -57,10 +57,10 @@ export function encrypt(text: string, key: string): string {
     Buffer.from(key.substring(0, 32), 'utf8'),
     iv,
   );
-  
+
   let encrypted = cipher.update(text, 'utf8', 'hex');
   encrypted += cipher.final('hex');
-  
+
   return iv.toString('hex') + ':' + encrypted;
 }
 
@@ -72,16 +72,16 @@ export function decrypt(encryptedText: string, key: string): string {
   const parts = encryptedText.split(':');
   const iv = Buffer.from(parts[0], 'hex');
   const encrypted = parts[1];
-  
+
   const decipher = crypto.createDecipheriv(
     algorithm,
     Buffer.from(key.substring(0, 32), 'utf8'),
     iv,
   );
-  
+
   let decrypted = decipher.update(encrypted, 'hex', 'utf8');
   decrypted += decipher.final('utf8');
-  
+
   return decrypted;
 }
 
@@ -187,7 +187,10 @@ export function generateApiKey(): string {
 /**
  * Mask sensitive data for logging
  */
-export function maskSensitiveData(data: string, visibleChars: number = 4): string {
+export function maskSensitiveData(
+  data: string,
+  visibleChars: number = 4,
+): string {
   if (data.length <= visibleChars * 2) {
     return '*'.repeat(data.length);
   }
@@ -196,4 +199,3 @@ export function maskSensitiveData(data: string, visibleChars: number = 4): strin
   const middle = '*'.repeat(data.length - visibleChars * 2);
   return `${start}${middle}${end}`;
 }
-

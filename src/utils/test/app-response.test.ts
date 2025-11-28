@@ -72,7 +72,9 @@ describe('App Response Classes', () => {
 
       // Assert
       const jsonCall = (mockResponse.json as jest.Mock).mock.calls[0][0];
-      expect(jsonCall.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+      expect(jsonCall.timestamp).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+      );
       expect(jsonCall.timestamp).toContain('Z');
     });
   });
@@ -130,4 +132,3 @@ describe('App Response Classes', () => {
     });
   });
 });
-

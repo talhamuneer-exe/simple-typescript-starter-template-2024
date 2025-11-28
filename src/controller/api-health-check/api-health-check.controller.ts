@@ -1,4 +1,3 @@
-/// <reference path="../../types/index.d.ts" />
 import { SuccessResponse } from '../../utils';
 import { Request, Response } from 'express';
 import { API_HEALTH_CHECK_CODES } from '../../utils/route-codes';
@@ -10,8 +9,19 @@ import { API_HEALTH_CHECK_CODES } from '../../utils/route-codes';
 export class apiHealthCheckController {
   public static apiHealthCheck(req: Request, res: Response): void {
     // Get request metadata for additional context
-    const metadata = (req as Request & { metadata?: { method?: string; path?: string; ip?: string; userAgent?: string; correlationId?: string; traceId?: string } }).metadata;
-    
+    const metadata = (
+      req as Request & {
+        metadata?: {
+          method?: string;
+          path?: string;
+          ip?: string;
+          userAgent?: string;
+          correlationId?: string;
+          traceId?: string;
+        };
+      }
+    ).metadata;
+
     // Prepare health check data
     const healthData = {
       status: 'healthy',
@@ -26,10 +36,15 @@ export class apiHealthCheckController {
         arch: process.arch,
       },
       memory: {
-        used: Math.round((process.memoryUsage().heapUsed / 1024 / 1024) * 100) / 100, // MB
-        total: Math.round((process.memoryUsage().heapTotal / 1024 / 1024) * 100) / 100, // MB
+        used:
+          Math.round((process.memoryUsage().heapUsed / 1024 / 1024) * 100) /
+          100, // MB
+        total:
+          Math.round((process.memoryUsage().heapTotal / 1024 / 1024) * 100) /
+          100, // MB
         percentage: Math.round(
-          (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) * 100,
+          (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) *
+            100,
         ),
       },
       // Request context information
@@ -45,14 +60,14 @@ export class apiHealthCheckController {
 
     // Using route-specific success code
     const successCode = API_HEALTH_CHECK_CODES.success.VERIFY_SUCCESS;
-    
+
     const success = new SuccessResponse(
       res,
       successCode.message,
       healthData,
       successCode.code, // Route-specific success code: API-001-SUC
     );
-    
+
     success.send();
   }
 }

@@ -27,7 +27,7 @@ const envVars: EnvVar[] = [
     name: 'PORT',
     required: false,
     type: 'number',
-    defaultValue: 3000,
+    defaultValue: 5001,
   },
   {
     name: 'SERVICE_NAME',
@@ -49,9 +49,7 @@ export function validateEnvironmentVariables(): void {
 
     // Check if required variable is missing
     if (envVar.required && !value) {
-      errors.push(
-        `Required environment variable ${envVar.name} is missing`,
-      );
+      errors.push(`Required environment variable ${envVar.name} is missing`);
       continue;
     }
 
@@ -76,10 +74,11 @@ export function validateEnvironmentVariables(): void {
     // Type validation
     if (value) {
       if (envVar.type === 'number' && isNaN(Number(value))) {
-        errors.push(
-          `Environment variable ${envVar.name} must be a number`,
-        );
-      } else if (envVar.type === 'boolean' && !['true', 'false'].includes(value.toLowerCase())) {
+        errors.push(`Environment variable ${envVar.name} must be a number`);
+      } else if (
+        envVar.type === 'boolean' &&
+        !['true', 'false'].includes(value.toLowerCase())
+      ) {
         errors.push(
           `Environment variable ${envVar.name} must be a boolean (true/false)`,
         );
@@ -95,9 +94,7 @@ export function validateEnvironmentVariables(): void {
   // Throw errors if any
   if (errors.length > 0) {
     errors.forEach((error) => logger.error('ENV_ERROR', error));
-    throw new Error(
-      `Environment validation failed:\n${errors.join('\n')}`,
-    );
+    throw new Error(`Environment validation failed:\n${errors.join('\n')}`);
   }
 
   logger.info('ENV_VALIDATION', 'Environment variables validated successfully');
@@ -106,10 +103,7 @@ export function validateEnvironmentVariables(): void {
 /**
  * Get validated environment variable
  */
-export function getEnvVar(
-  name: string,
-  defaultValue?: string,
-): string {
+export function getEnvVar(name: string, defaultValue?: string): string {
   const value = process.env[name];
   if (!value && defaultValue === undefined) {
     throw new Error(`Environment variable ${name} is required but not set`);
@@ -145,4 +139,3 @@ export function getEnvBoolean(name: string, defaultValue?: boolean): boolean {
   }
   return value.toLowerCase() === 'true';
 }
-

@@ -8,10 +8,10 @@ import { BadRequestError, ErrorCode } from '../utils';
 export const requestSizeLimits = {
   // JSON body size limit (default: 10MB)
   json: 10 * 1024 * 1024, // 10MB
-  
+
   // URL-encoded body size limit (default: 1MB)
   urlencoded: 1 * 1024 * 1024, // 1MB
-  
+
   // Maximum number of parameters
   parameterLimit: 1000,
 };
@@ -68,7 +68,7 @@ export const contentTypeValidator = (
   }
 
   const contentType = req.headers['content-type'];
-  
+
   // Allow JSON and URL-encoded
   if (
     contentType &&
@@ -111,4 +111,3 @@ export const parameterLimit = (
 
   next();
 };
-

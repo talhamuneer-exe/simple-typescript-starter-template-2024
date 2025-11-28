@@ -1,4 +1,3 @@
-/// <reference path="../types/index.d.ts" />
 import { NextFunction, Request, Response } from 'express';
 import { v4 as uuidV4 } from 'uuid';
 import { RequestMetadata } from '../types';
@@ -27,7 +26,10 @@ export const requestMetadata = (
   };
 
   // Type assertions for extended request properties
-  const reqWithUser = req as Request & { user?: { id?: string }; sessionID?: string };
+  const reqWithUser = req as Request & {
+    user?: { id?: string };
+    sessionID?: string;
+  };
 
   // Create request metadata
   const metadata: RequestMetadata = {
@@ -51,8 +53,15 @@ export const requestMetadata = (
   };
 
   // Attach to request and response with type assertions
-  const reqExtended = req as Request & { metadata: RequestMetadata; id: string };
-  const resExtended = res as Response & { id: string; metadata: RequestMetadata; locals: { startTime?: number } };
+  const reqExtended = req as Request & {
+    metadata: RequestMetadata;
+    id: string;
+  };
+  const resExtended = res as Response & {
+    id: string;
+    metadata: RequestMetadata;
+    locals: { startTime?: number };
+  };
 
   reqExtended.metadata = metadata;
   reqExtended.id = requestId;

@@ -9,4 +9,3 @@ usersRouter.get('/', asyncWrapper(UsersController.getUsers));
 
 // GET /api/users/:id - Get user by ID
 usersRouter.get('/:id', asyncWrapper(UsersController.getUserById));
-

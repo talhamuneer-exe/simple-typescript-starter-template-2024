@@ -1,4 +1,3 @@
-/// <reference path="../types/index.d.ts" />
 import {
   // NextFunction,
   Request,
@@ -6,6 +5,7 @@ import {
 } from 'express';
 
 import { AppError, InternalError, logger } from '../utils';
+import { httpErrorsTotal } from './metrics';
 
 declare interface ErrorWithRequestId extends Error {
   requestId?: string | number;
@@ -21,8 +21,22 @@ export const errorHandler = (
   res: Response,
   // _next: NextFunction,
 ): void => {
-  const metadata = (req as Request & { metadata?: { requestId?: string; correlationId?: string; traceId?: string; path?: string; method?: string; ip?: string; userAgent?: string; userId?: string } }).metadata;
-  const requestId = (req as Request & { id?: string }).id || metadata?.requestId || 'unknown';
+  const metadata = (
+    req as Request & {
+      metadata?: {
+        requestId?: string;
+        correlationId?: string;
+        traceId?: string;
+        path?: string;
+        method?: string;
+        ip?: string;
+        userAgent?: string;
+        userId?: string;
+      };
+    }
+  ).metadata;
+  const requestId =
+    (req as Request & { id?: string }).id || metadata?.requestId || 'unknown';
 
   // If it's an AppError, use its built-in handling
   if (error instanceof AppError) {
@@ -45,13 +59,21 @@ export const errorHandler = (
       ...(process.env.NODE_ENV !== 'production' && { stack: error.stack }),
     });
 
+    // Track error metrics
+    const route = metadata?.path || 'unknown';
+    const method = metadata?.method || req.method || 'unknown';
+    httpErrorsTotal.labels(method, route, error.code).inc();
+
+    // Store error code in response locals for metrics middleware
+    res.locals.errorCode = error.code;
+
     AppError.handle(error, res);
     return;
   }
 
   // Handle unknown errors
   error.requestId = requestId;
-  
+
   logger.error('UNKNOWN_ERROR', {
     message: error.message,
     name: error.name,
@@ -72,6 +94,14 @@ export const errorHandler = (
       ? 'An unexpected error occurred'
       : error.message,
   );
+
+  // Track error metrics for unknown errors
+  const route = metadata?.path || 'unknown';
+  const method = metadata?.method || req.method || 'unknown';
+  httpErrorsTotal.labels(method, route, internalError.code).inc();
+
+  // Store error code in response locals for metrics middleware
+  res.locals.errorCode = internalError.code;
 
   AppError.handle(internalError, res);
   return;

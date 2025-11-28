@@ -12,7 +12,9 @@ export const mongoSanitization = mongoSanitize({
   onSanitize: ({ key }) => {
     // Log potential injection attempts
     if (process.env.NODE_ENV !== 'production') {
-      console.warn(`[SECURITY] Potential MongoDB injection attempt detected: ${key}`);
+      console.warn(
+        `[SECURITY] Potential MongoDB injection attempt detected: ${key}`,
+      );
     }
   },
 });
@@ -133,16 +135,9 @@ export const commonValidations = {
 
   // ID validation
   mongoId: (field: string) =>
-    body(field)
-      .optional()
-      .isMongoId()
-      .withMessage(`Invalid ${field} format`),
+    body(field).optional().isMongoId().withMessage(`Invalid ${field} format`),
 
   // URL validation
   url: (field: string) =>
-    body(field)
-      .optional()
-      .isURL()
-      .withMessage(`Invalid ${field} URL format`),
+    body(field).optional().isURL().withMessage(`Invalid ${field} URL format`),
 };
-

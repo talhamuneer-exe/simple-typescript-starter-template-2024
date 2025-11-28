@@ -10,16 +10,16 @@ export const securityHeaders = helmet({
   frameguard: {
     action: 'deny',
   },
-  
+
   // Prevent MIME type sniffing
   noSniff: true,
-  
+
   // Enable XSS protection
   xssFilter: true,
-  
+
   // Remove X-Powered-By header
   hidePoweredBy: true,
-  
+
   // Content Security Policy
   contentSecurityPolicy: {
     directives: {
@@ -34,19 +34,18 @@ export const securityHeaders = helmet({
       frameSrc: ["'none'"],
     },
   },
-  
+
   // HTTP Strict Transport Security (HSTS)
   hsts: {
     maxAge: 31536000, // 1 year
     includeSubDomains: true,
     preload: true,
   },
-  
+
   // Referrer Policy
   referrerPolicy: {
     policy: 'no-referrer',
   },
-  
 });
 
 /**
@@ -59,19 +58,21 @@ export const customSecurityHeaders = (
   next: NextFunction,
 ): void => {
   // Prevent caching of sensitive data
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader(
+    'Cache-Control',
+    'no-store, no-cache, must-revalidate, private',
+  );
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
-  
+
   // X-Content-Type-Options
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  
+
   // X-Frame-Options (additional to Helmet)
   res.setHeader('X-Frame-Options', 'DENY');
-  
+
   // X-XSS-Protection (for older browsers)
   res.setHeader('X-XSS-Protection', '1; mode=block');
-  
+
   next();
 };
-

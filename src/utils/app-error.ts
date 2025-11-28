@@ -113,10 +113,7 @@ export class InternalError extends AppError {
 }
 
 export class ValidationError extends AppError {
-  constructor(
-    message?: string,
-    code: ErrorCode = ErrorCode.VAL_000,
-  ) {
+  constructor(message?: string, code: ErrorCode = ErrorCode.VAL_000) {
     super(code, ErrorType.VALIDATION, message);
   }
 }
@@ -129,38 +126,26 @@ export class BadRequestError extends AppError {
 
 // Authentication Errors
 export class AuthenticationError extends AppError {
-  constructor(
-    message?: string,
-    code: ErrorCode = ErrorCode.AUT_000,
-  ) {
+  constructor(message?: string, code: ErrorCode = ErrorCode.AUT_000) {
     super(code, ErrorType.AUTHENTICATION, message);
   }
 }
 
 export class UnauthorizedError extends AppError {
-  constructor(
-    message?: string,
-    code: ErrorCode = ErrorCode.AUT_005,
-  ) {
+  constructor(message?: string, code: ErrorCode = ErrorCode.AUT_005) {
     super(code, ErrorType.UNAUTHORIZED, message);
   }
 }
 
 // Authorization Errors
 export class AuthorizationError extends AppError {
-  constructor(
-    message?: string,
-    code: ErrorCode = ErrorCode.AUTZ_000,
-  ) {
+  constructor(message?: string, code: ErrorCode = ErrorCode.AUTZ_000) {
     super(code, ErrorType.AUTHORIZATION, message);
   }
 }
 
 export class ForbiddenError extends AppError {
-  constructor(
-    message?: string,
-    code: ErrorCode = ErrorCode.AUTZ_002,
-  ) {
+  constructor(message?: string, code: ErrorCode = ErrorCode.AUTZ_002) {
     super(code, ErrorType.FORBIDDEN, message);
   }
 }
@@ -174,10 +159,7 @@ export class DatabaseError extends AppError {
 
 // External Service Errors
 export class ExternalServiceError extends AppError {
-  constructor(
-    message?: string,
-    code: ErrorCode = ErrorCode.EXT_000,
-  ) {
+  constructor(message?: string, code: ErrorCode = ErrorCode.EXT_000) {
     super(code, ErrorType.EXTERNAL, message);
   }
 }
@@ -191,10 +173,7 @@ export class NotFoundError extends AppError {
 
 // Business Logic Errors
 export class BusinessLogicError extends AppError {
-  constructor(
-    message?: string,
-    code: ErrorCode = ErrorCode.BL_000,
-  ) {
+  constructor(message?: string, code: ErrorCode = ErrorCode.BL_000) {
     super(code, ErrorType.BUSINESS_LOGIC, message);
   }
 }

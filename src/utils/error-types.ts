@@ -36,4 +36,3 @@ export const ErrorTypeToHttpStatus: Record<ErrorType, number> = {
   [ErrorType.FORBIDDEN]: 403,
   [ErrorType.CONFLICT]: 409,
 };
-

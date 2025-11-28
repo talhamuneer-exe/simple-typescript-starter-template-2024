@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { environment } from '../config/config';
+import { rateLimitHits } from './metrics';
+import { logRateLimit } from './security-logger';
 
 /**
  * General API Rate Limiter
@@ -16,6 +18,16 @@ export const apiRateLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   handler: (req: Request, res: Response) => {
+    const metadata = (
+      req as Request & { metadata?: { ip?: string; path?: string } }
+    ).metadata;
+    const endpoint = metadata?.path || req.path || 'unknown';
+    const ip = metadata?.ip || req.ip || 'unknown';
+
+    // Track rate limit metric
+    rateLimitHits.labels(endpoint, ip).inc();
+    logRateLimit(req, endpoint);
+
     res.status(429).json({
       requestId: (req as Request & { id?: string }).id,
       message: 'Too many requests from this IP, please try again later.',
@@ -88,4 +100,3 @@ export function createRateLimiter(options: {
     legacyHeaders: false,
   });
 }
-
